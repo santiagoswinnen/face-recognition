@@ -58,8 +58,22 @@ def pca_train():
 
 def kpca_train():
     all_faces = parse_faces()
+    degree = 2
 
-    return
+    K = (np.dot(all_faces, np.transpose(all_faces)) + 1) ** degree
+
+    ones = np.ones([trainings, trainings]) / trainings
+    K_dot_ones = np.dot(K, ones)
+    K = K - np.dot(ones, K) - K_dot_ones + np.dot(ones, K_dot_ones)
+
+    C_eigenvectors = find_eigenvectors(np.array(K), np.array(K))
+
+    for i in range(len(K)):
+        C_eigenvectors[:, i] /= np.linalg.norm(C_eigenvectors[:, i])
+
+    np.savetxt(trained_file, C_eigenvectors, fmt='%s')
+
+    return C_eigenvectors
 
 
 def parse_faces():
