@@ -31,7 +31,7 @@ def pca_train():
         print('Successfully loaded {}'.format(trained_file))
         return np.loadtxt(trained)
 
-    all_faces, last_index = parse_faces()
+    all_faces, person, image_index = parse_faces()
     # Average face. The second arg (0) means that the mean is calculated
     # using all the values at that index from every variant
     mean = np.mean(all_faces, 0)
@@ -39,7 +39,6 @@ def pca_train():
     # Restando cara media
     all_faces = [all_faces[k, :] - mean for k in range(all_faces.shape[0])]
     # print(all_faces)
-    # show_average_face(np.asarray(all_faces[0]))
 
     A = np.transpose(all_faces)
     n, m = A.shape
@@ -49,8 +48,6 @@ def pca_train():
     C_eigenvectors = np.dot(A, L_eigenvectors)
     for i in range(m):
         C_eigenvectors[:, i] /= np.linalg.norm(C_eigenvectors[:, i])
-
-    show_average_face(C_eigenvectors)
 
     np.savetxt(trained_file, C_eigenvectors, fmt='%s')
     return C_eigenvectors
@@ -125,10 +122,10 @@ def pca_face_input(eigenfaces, input_image):
     max = 100
     labels = np.zeros([test_set])
 
-    # Solo las primeras eigenfaces
+    # Only first eigen-faces
     B = eigenfaces[:, 0:max]
 
-    # Proyectado
+    # Projecting
     image_projection = np.dot(all_faces, B)
     image_test_projection = np.dot(test_set, B)
 
@@ -138,6 +135,10 @@ def pca_face_input(eigenfaces, input_image):
     labels = clf.predict(image_test_projection)
 
     return labels[0]
+
+
+def kpca_face_input(eigenfaces, face_img):
+    return
 
 
 def show_average_face(av_face):
