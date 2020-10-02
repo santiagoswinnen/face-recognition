@@ -32,7 +32,7 @@ def detect_faces(mode, eigenfaces, names):
                     h_padd = int(0.3 * h)
 
                     face_img = gray[y - h_padd:y + new_h, x:x + w]
-                    face_img = cv2.resize(face_img, (92, 112))
+                    face_img = cv2.resize(face_img, (480, 640))
 
                     print("[INFO] Object found. Saving locally.")
                     cv2.imwrite('cv_added_faces/faces_' + str(i) + '.jpg', face_img)

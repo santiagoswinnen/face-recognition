@@ -93,7 +93,7 @@ def parse_faces():
             img_array = (np.asarray(img.getdata()) / 255)
 
             # Adding the matrix to the array
-            all_faces[image_index, :] = img_array
+            all_faces[image_index, :] = np.reshape(img_array, [1, image_area])
             person[image_index, 0] = person_index
             image_index += 1
         person_index += 1
@@ -105,23 +105,20 @@ def pca_face_input(eigenfaces, input_image):
     all_faces, person, last_index = parse_faces()
 
     # Test set
-    test_set = np.zeros([1, image_area])
+    test_number = 1
+    test_set = np.zeros([test_number, image_area])
+    image_index = 0
 
     # Adapting new image to match in format with the rest (normalized and with vector shape)
     a = input_image / 255.0
     # Reshape to vector for insertion in 'images'
-    test_number = 1
-    all_faces[last_index, :] = np.reshape(a, [test_number, image_area])
+    test_set[image_index, :] = np.reshape(a, [1, image_area])
 
     # CARA MEDIA
     # Mean for pixel i using 'images' columns
     mean = np.mean(all_faces, 0)
-
     test_set = [test_set[k, :] - mean for k in range(test_set.shape[0])]
-
     max = 100
-    labels = np.zeros([test_set])
-
     # Only first eigen-faces
     B = eigenfaces[:, 0:max]
 
