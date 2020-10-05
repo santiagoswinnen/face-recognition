@@ -1,6 +1,6 @@
 from os import listdir
 from os.path import join, isfile
-from eigenvectors import find_eigenvectors
+from eigenvectors import find_eigenvectors, gram_schmidt, found_eigenvectors
 from pathlib import Path
 import matplotlib.pyplot as plt
 import PIL
@@ -63,26 +63,32 @@ def kpca_train():
     all_faces, person, image_index = parse_faces()
 
     degree = 2
+    K = (np.dot(all_faces, all_faces.T) / trainings + 1) ** degree
+    unoM = np.ones([trainings, trainings]) / trainings
+    K = K - np.dot(unoM, K) - np.dot(K, unoM) + np.dot(unoM, np.dot(K, unoM))
 
-    K = (np.dot(all_faces, np.transpose(all_faces)) + 1) ** degree
+    A = np.copy(K)
+    m, n = A.shape
+    last_R = np.zeros(A.shape)
+    eig_vec_K = 1
+    found_eigen = False
 
-    #Center the original images
-    ones = np.ones([trainings, trainings]) / trainings
+    while not found_eigen:
+        Q, R = gram_schmidt(A)
+        A = np.dot(R, Q)
+        eig_vec_K = np.dot(eig_vec_K, Q)
+        found_eigen = found_eigenvectors(last_R, R)
+        last_R = R
 
-    K_dot_ones = np.dot(K, ones)
-    ones_dot_K = np.dot(ones, K)
-    ones_dot_K_dot_ones = np.dot(ones, K_dot_ones)
+    for i in range(m):
+        eig_vec_K[:, i] /= np.linalg.norm(eig_vec_K[:, i])
 
-    K = K - ones_dot_K - K_dot_ones + ones_dot_K_dot_ones
+    for col in range(eig_vec_K.shape[1]):
+        eig_vec_K[:, col] = eig_vec_K[:, col] / np.sqrt(R[col, col])
 
-    C_eigenvectors = find_eigenvectors(np.array(K), np.array(K))
+    np.savetxt(trained_file_kpca, eig_vec_K, fmt='%s')
+    return eig_vec_K
 
-    for i in range(len(K)):
-        C_eigenvectors[:, i] /= np.linalg.norm(C_eigenvectors[:, i])
-
-    np.savetxt(trained_file_kpca, C_eigenvectors, fmt='%s')
-
-    return C_eigenvectors
 
 
 def parse_faces():
@@ -146,7 +152,7 @@ def pca_face_input(eigenfaces, input_image):
     return labels[0]
 
 
-def kpca_face_input(eigenfaces, face_img):
+def kpca_face_input(eigenfaces, face_image):
     all_faces, person, last_index = parse_faces()
 
     #Test set
@@ -182,7 +188,7 @@ def kpca_face_input(eigenfaces, face_img):
     nmax = eigenfaces.shape[1]
     nmax = 100
     set_proyection = set_pre_proyection[:,0:nmax]
-    test_set_proyection = test_set_pre_proyection[:,0:nmax]
+    test_set_proyection = test_set_pre_proyect[:,0:nmax]
             
     #SVM
     clf = svm.LinearSVC()
