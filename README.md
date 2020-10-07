@@ -1,14 +1,14 @@
 # face-recognition
-Face Recognition (PCA y KPCA con Pyhton) - Métodos Numéricos Avanzados 2020 - Instituto Tecnológico de Buenos Aires
+Face Recognition (PCA y KPCA en Pyhton) - Métodos Numéricos Avanzados 2020 - Instituto Tecnológico de Buenos Aires
 
 ### Requisitos
 Contar con Python 3 instalado.
 
 Contar con las librerías numpy, sklearn, matplotlib y opencv-python instaladas. De no ser así, ejecutar los comandos:
-
-> pip install [numpy | sklearn | matplotlib]
-> pip3 install opencv-python
-
+```
+pip install [numpy | sklearn | matplotlib]
+pip3 install opencv-python
+```
 Estos comandos puede variar para distintos Sistemas Operativos
 
 ### Ejecución
@@ -16,9 +16,9 @@ Estos comandos puede variar para distintos Sistemas Operativos
 Para ejecutar el programa se debe elegir el método a utilizar (PCA o KPCA), que se pasará por parámetro. 
 
 Luego, desde la carpeta del proyecto, ejecutar el comando:
-
-> python3 main.py [pca | kpca]
-
+```
+python3 main.py [pca | kpca]
+```
 Una vez que el programa esté en ejecución, se encenderá la cámara web de su computadora y deberá presionar "r" para tomar la fotografía que el programa analizará.
 
 ###Referencias
